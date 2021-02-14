@@ -1,0 +1,1 @@
+{"clusterName":"Com Kafka","broker":"localhost:9092","securityConfig":{"type":"SSL","truststore":"truststore.jks","truststorePassword":"test@123","keystore":"keystore.jks","keystorePassword":"test@123"},"messageFormat":"AVRO","schemaRegistryUrl":"http://schema-registry.com/schema-registry-service/kafka"}

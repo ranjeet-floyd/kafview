@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org" lang="en">
+<head>
+    <title>Config for KafView</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<h1>Form</h1>
+<form action="#" th:action="@{/config}" th:object="${kafviewConfig}" method="post">
+    <p>ClusterName: <input type="text" th:field="*{clusterName}"/></p>
+    <p>Broker: <input type="text" th:field="*{broker}"/></p>
+    <p>MessageType: <select name="securityType" th:field="*{messageFormat}">
+        <option value="">DEFAULT</option>
+        <option value="AVRO">AVRO</option>
+    </select></p>
+    <p>SchemaRegistryUrl: <input type="text" th:field="*{schemaRegistryUrl}"/></p>
+    <p>Security Type: <select name="securityType" th:field="*{securityConfig.type}">
+        <option value="">Security Type</option>
+        <option value="SSL">SSL</option>
+    </select></p>
+    <p>Truststore Location: <input type="text" th:field="*{securityConfig.truststore}"/></p>
+    <p>Truststore Password: <input type="text" th:field="*{securityConfig.truststorePassword}"/></p>
+    <p>Keystore Location: <input type="text" th:field="*{securityConfig.keystore}"/></p>
+    <p>Keystore Password: <input type="text" th:field="*{securityConfig.keystorePassword}"/></p>
+    <p><input type="submit" value="Submit"/> <input type="reset" value="Reset"/></p>
+</form>
+</body>
+</html>

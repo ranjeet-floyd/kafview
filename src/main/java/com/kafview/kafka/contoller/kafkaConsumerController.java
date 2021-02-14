@@ -3,14 +3,16 @@ package com.kafview.kafka.contoller;
 import com.kafview.kafka.Message;
 import com.kafview.kafka.Util;
 import com.kafview.kafka.config.Deserializers;
+import com.kafview.kafka.config.KafkaConfig;
 import com.kafview.kafka.config.KafviewConfig;
 import com.kafview.kafka.config.MessageFormat;
+import com.kafview.kafka.service.KafkaConsumerClient;
 import com.kafview.kafka.service.kafkaConsumerService;
+import com.kafview.kafka.service.kafkaConsumerServiceImpl;
 import com.kafview.kafka.util.ConfigUtil;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.springframework.lang.NonNull;
@@ -26,26 +28,34 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class kafkaConsumerController {
 
   private kafkaConsumerService kafkaConsumerService;
-  private List<String> topics;
-  private List<String> brokers;
+  private List<String> topics = Collections.emptyList();
+  private List<String> brokers = Collections.emptyList();
   private KafviewConfig kafviewConfig;
 
-  public kafkaConsumerController(kafkaConsumerService kafkaConsumerService) {
-    this.kafkaConsumerService = kafkaConsumerService;
+
+  @GetMapping("/")
+  public String loadConfig() {
+    try {
+      kafviewConfig = ConfigUtil.loadKafviewConfig();
+      if (Objects.nonNull(kafviewConfig)) {
+        init();
+        return "redirect:/messages";
+      }
+    } catch (Exception ex) {
+      log.error(ex.getMessage(), ex);
+    }
+    return "redirect:/config";
   }
 
-  @PostConstruct
-  public void init() {
-    topics = kafkaConsumerService.getTopics();
-    brokers = kafkaConsumerService.getBrokers();
-    kafviewConfig = ConfigUtil.loadKafviewConfig();
-  }
 
-
-  @GetMapping("/topic/messages")
+  @GetMapping("/messages")
   public String messages(@NonNull @RequestParam(value = "name", required = false) String topicName,
                          @RequestParam(name = "timeInSec", required = false, defaultValue = "1000000")
                              Integer timeInSec, Model model) {
+    init();
+    if (Objects.isNull(kafkaConsumerService)) {
+      return "redirect:/config";
+    }
     List<Message> messageList = Collections.emptyList();
     if (StringUtils.hasText(topicName)) {
       Deserializers deserializers = new Deserializers(
@@ -64,9 +74,23 @@ public class kafkaConsumerController {
     return "messages";
   }
 
+
   @ModelAttribute
   public void loadKafviewConfig(Model model) {
     model.addAttribute("kafviewConfig", ConfigUtil.loadKafviewConfig());
+  }
+
+  private void init() {
+    if (Objects.nonNull(kafviewConfig) && Objects.isNull(kafkaConsumerService)) {
+      kafkaConsumerService = new kafkaConsumerServiceImpl(new KafkaConsumerClient(new KafkaConfig(kafviewConfig)));
+    }
+    if (topics.isEmpty()) {
+      topics = kafkaConsumerService.getTopics();
+    }
+    if (brokers.isEmpty()) {
+      brokers = kafkaConsumerService.getBrokers();
+    }
+
   }
 
 

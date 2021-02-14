@@ -34,7 +34,7 @@
 
                             <ul th:each="topic : ${topics}">
                                 <li>
-                                    <a th:href="${'/topic/messages?name='+topic}" th:text="${topic}"></a>
+                                    <a th:href="${'/messages?name='+topic}" th:text="${topic}"></a>
                                 </li>
                             </ul>
                         </li>

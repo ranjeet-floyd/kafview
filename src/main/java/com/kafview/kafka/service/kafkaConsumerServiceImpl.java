@@ -1,21 +1,18 @@
 package com.kafview.kafka.service;
 
-import com.kafview.kafka.config.KafkaConfig;
-import com.kafview.kafka.util.ConfigUtil;
 import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.springframework.stereotype.Service;
 
 /**
  * Kafka consumer service.
  */
-@Service
 public class kafkaConsumerServiceImpl implements kafkaConsumerService {
 
   KafkaConsumerClient kafkaConsumerClient;
 
-  public kafkaConsumerServiceImpl() {
-    this.kafkaConsumerClient = new KafkaConsumerClient(new KafkaConfig(ConfigUtil.loadKafviewConfig()));
+  public kafkaConsumerServiceImpl(KafkaConsumerClient kafkaConsumerClient) {
+    this.kafkaConsumerClient = kafkaConsumerClient; // new KafkaConsumerClient(new KafkaConfig(ConfigUtil
+    // .loadKafviewConfig()));
 
   }
 

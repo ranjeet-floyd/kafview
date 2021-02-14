@@ -16,8 +16,9 @@ public class ConfigUtil {
       String kafviewConfig = new String(Files.readAllBytes(getKafviewConfig().toPath()));
       return Util.objectMapper().readValue(kafviewConfig, KafviewConfig.class);
     } catch (IOException ex) {
-      throw new RuntimeException(ex.getMessage(), ex);
+      log.error(ex.getMessage(), ex);
     }
+    return null;
   }
 
   public static void saveKafviewConfig(KafviewConfig kafviewConfig) {
@@ -25,7 +26,7 @@ public class ConfigUtil {
       Files.write(getKafviewConfig().toPath(),
           Util.objectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(kafviewConfig));
     } catch (IOException ex) {
-      throw new RuntimeException(ex.getMessage(), ex);
+      log.error(ex.getMessage(), ex);
     }
   }
 

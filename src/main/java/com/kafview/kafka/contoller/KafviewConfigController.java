@@ -21,7 +21,7 @@ public class KafviewConfigController {
   @PostMapping("/config")
   public String config(@ModelAttribute KafviewConfig kafviewConfig) {
     ConfigUtil.saveKafviewConfig(kafviewConfig);
-    return "redirect:/topic/messages";
+    return "redirect:/messages";
   }
 
 

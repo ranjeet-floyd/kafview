@@ -22,7 +22,8 @@ public class ConfigUtil {
 
   public static void saveKafviewConfig(KafviewConfig kafviewConfig) {
     try {
-      Files.write(getKafviewConfig().toPath(), Util.objectMapper().writeValueAsBytes(kafviewConfig));
+      Files.write(getKafviewConfig().toPath(),
+          Util.objectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(kafviewConfig));
     } catch (IOException ex) {
       throw new RuntimeException(ex.getMessage(), ex);
     }

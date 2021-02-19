@@ -4,6 +4,9 @@
     list-style:none;
     width: 100px;
 }
+a:hover {
+    background-color: yellow;
+}
 .tree ul {
     margin-left:1em;
     position:relative
@@ -52,6 +55,7 @@
 .tree li a {
     text-decoration: none;
     color:#369;
+    font-size: small;
 }
 .tree li button, .tree li button:active, .tree li button:focus {
     text-decoration: none;

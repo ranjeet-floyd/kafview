@@ -1,10 +1,7 @@
 package com.kafview.kafka.service;
 
-import static java.time.temporal.ChronoUnit.SECONDS;
-
 import com.kafview.kafka.config.KafkaConfig;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -65,9 +63,14 @@ public class KafkaConsumerClient {
       }
       consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
       consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"); // TODO: check
-//      consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaConfig.getConsumerGroup());
+      consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaConfig.getConsumerGroup() + UUID.randomUUID());
       consumerProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 15000);
       consumerProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 1000);
+      consumerProps.put("max.partition.fetch.bytes",3048576);
+      consumerProps.put("fetch.max.bytes",3048576);
+      consumerProps.put("max.poll.records",10000);
+      consumerProps.put("fetch.max.wait.ms",10000);
+      
       consumer = new org.apache.kafka.clients.consumer.KafkaConsumer(consumerProps);
       adminClient = KafkaAdminClient.create(consumerProps);
     }
@@ -92,7 +95,9 @@ public class KafkaConsumerClient {
       timestampsToSearch.put(partition, System.currentTimeMillis() - timeInSecs*1000);
     }
     boolean hasRecords = false;
-    Map<TopicPartition, OffsetAndTimestamp> outOffsets = consumer.offsetsForTimes(timestampsToSearch);
+
+    Map<TopicPartition, OffsetAndTimestamp> outOffsets = consumer.offsetsForTimes(timestampsToSearch,
+        Duration.ofMinutes(1));
     for (Map.Entry<TopicPartition, OffsetAndTimestamp> of : outOffsets.entrySet()) {
       if (of.getValue() != null) {
         consumer.seek(of.getKey(), of.getValue().offset());
@@ -103,8 +108,7 @@ public class KafkaConsumerClient {
     if (hasRecords) {
       consumerRecords = consumer.poll(Duration.ofSeconds(10));
 
-    }
-    consumer.unsubscribe();
+    } 
     return consumerRecords;
   }
 

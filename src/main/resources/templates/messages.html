@@ -14,7 +14,7 @@
 <body th:object="${kafviewConfig}" >
 
 <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-    <h3 class="navbar-brand col-sm-3 col-md-8 mr-0" href="#">Kafka UI</h3>
+    <h2 class="navbar-brand col-sm-3 col-md-8 mr-0"><a  href="/">Kafka UI</a></h2>
     <ul class="navbar-brand navbar-nav px-3 col-sm-3 col-md-2">
         <li class="nav-item text-nowrap">
             <a class="nav-link" href="/config">Config</a>
@@ -33,8 +33,10 @@
                         <li class="nav-item">Topics</a>
 
                             <ul th:each="topic : ${topics}">
-                                <li>
+                                <li >
+                                    <button type="button" class="btn btn-secondary btn-lg">
                                     <a th:href="${'/messages?name='+topic}" th:text="${topic}"></a>
+                                    </button>
                                 </li>
                             </ul>
                         </li>
@@ -67,12 +69,12 @@
                         <tr th:each="message : ${messages}">
                             <td th:text="${message.getKey() == null ? 'null': message.getKey()}">Key</td>
                             <td >
-                                <p th:each="header :${message.getHeader()}" 
+                                <p style="width: 200px"  th:each="header :${message.getHeader()}" 
                                    th:text="${header.getKey() + ' : '+ header.getValue() }"></p>
                             </td>
                             <td th:text="${message.getOffset()}">Offset</td>
                             <td th:text="${message.getPartition()}">Partition</td>
-                            <td th:text="${message.getValue()}">Value</td>
+                            <td th:text="${message.getValue()}"><pre>Value</pre></td>
                             <td th:text="${message.getTimestamp()}">Timestamp</td>
                         </tr>
                         </tbody>

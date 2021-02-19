@@ -36,9 +36,8 @@ public class kafkaConsumerController {
   @GetMapping("/")
   public String loadConfig() {
     try {
-      kafviewConfig = ConfigUtil.loadKafviewConfig();
+      init();
       if (Objects.nonNull(kafviewConfig)) {
-        init();
         return "redirect:/messages";
       }
     } catch (Exception ex) {
@@ -51,7 +50,9 @@ public class kafkaConsumerController {
   @GetMapping("/messages")
   public String messages(@NonNull @RequestParam(value = "name", required = false) String topicName,
                          @RequestParam(name = "timeInSec", required = false, defaultValue = "1000000")
-                             Integer timeInSec, Model model) {
+                             Integer timeInSec,
+                         @RequestParam(name = "partition", required = false, defaultValue = "-1") Integer partition
+      , Model model) {
     init();
     if (Objects.isNull(kafkaConsumerService)) {
       return "redirect:/config";
@@ -81,17 +82,17 @@ public class kafkaConsumerController {
   }
 
   private void init() {
-    if (Objects.nonNull(kafviewConfig) && Objects.isNull(kafkaConsumerService)) {
+    kafviewConfig = ConfigUtil.loadKafviewConfig();
+    if (Objects.nonNull(kafviewConfig)) {
       kafkaConsumerService = new kafkaConsumerServiceImpl(new KafkaConsumerClient(new KafkaConfig(kafviewConfig)));
-    }
-    if (topics.isEmpty()) {
-      topics = kafkaConsumerService.getTopics();
-    }
-    if (brokers.isEmpty()) {
-      brokers = kafkaConsumerService.getBrokers();
+      if (topics.isEmpty()) {
+        topics = kafkaConsumerService.getTopics();
+      }
+      if (brokers.isEmpty()) {
+        brokers = kafkaConsumerService.getBrokers();
+      }
     }
 
   }
-
 
 }

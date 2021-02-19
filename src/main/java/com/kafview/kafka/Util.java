@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
@@ -29,8 +30,11 @@ public class Util {
         .offset(record.offset())
         .partition(record.partition())
         .timestamp(
-            LocalDateTime.ofEpochSecond(record.timestamp()/1000, 0, ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME))
+            LocalDateTime.ofEpochSecond(record.timestamp() / 1000, 0, ZoneOffset.UTC)
+                .format(DateTimeFormatter.ISO_DATE_TIME))
+        .msgTimestamp(record.timestamp())
         .build()));
+    messageList.sort((o1, o2) -> (int) (o2.getMsgTimestamp() - o1.getMsgTimestamp()));
     return messageList;
   }
 

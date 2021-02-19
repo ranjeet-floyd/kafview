@@ -65,7 +65,9 @@ public class KafkaConsumerClient {
       }
       consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
       consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"); // TODO: check
-      consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaConfig.getConsumerGroup());
+//      consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaConfig.getConsumerGroup());
+      consumerProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 15000);
+      consumerProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 1000);
       consumer = new org.apache.kafka.clients.consumer.KafkaConsumer(consumerProps);
       adminClient = KafkaAdminClient.create(consumerProps);
     }
@@ -87,7 +89,7 @@ public class KafkaConsumerClient {
     consumer.assign(topicPartitionList);
     Map<TopicPartition, Long> timestampsToSearch = new HashMap<>();
     for (TopicPartition partition : topicPartitionList) {
-      timestampsToSearch.put(partition, Instant.now().minus(timeInSecs, SECONDS).toEpochMilli());
+      timestampsToSearch.put(partition, System.currentTimeMillis() - timeInSecs*1000);
     }
     boolean hasRecords = false;
     Map<TopicPartition, OffsetAndTimestamp> outOffsets = consumer.offsetsForTimes(timestampsToSearch);

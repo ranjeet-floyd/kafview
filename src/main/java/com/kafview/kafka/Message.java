@@ -16,4 +16,5 @@ public class Message {
   private int partition;
   private long offset;
   private String timestamp;
+  private long msgTimestamp;
 }
